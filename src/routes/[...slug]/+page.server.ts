@@ -28,7 +28,7 @@ type PageData =
       schedule: Cell[];
     };
 
-export const load: PageServerLoad = async ({ params, url }): Promise<PageData> => {
+export const load: PageServerLoad = async ({ params, url, platform }): Promise<PageData> => {
   const selectedOptions = params.slug.split('/');
   const acYears = (await Kairos.loadAcademicYears()).sort((a, b) =>
     a.valore.localeCompare(b.valore)
@@ -46,7 +46,7 @@ export const load: PageServerLoad = async ({ params, url }): Promise<PageData> =
     redirect(301, resolve('/'));
   }
 
-  const schools = (await Kairos.loadSchools(selectedAcYear.valore)).sort((a, b) =>
+  const schools = (await Kairos.loadSchools(platform, selectedAcYear.valore)).sort((a, b) =>
     a.label.localeCompare(b.label)
   );
 
@@ -63,9 +63,9 @@ export const load: PageServerLoad = async ({ params, url }): Promise<PageData> =
     redirect(301, resolve(`/${selectedAcYear.valore}`));
   }
 
-  const degrees = (await Kairos.loadDegrees(selectedAcYear.valore, selectedSchool.valore)).sort(
-    (a, b) => a.label.localeCompare(b.label)
-  );
+  const degrees = (
+    await Kairos.loadDegrees(platform, selectedAcYear.valore, selectedSchool.valore)
+  ).sort((a, b) => a.label.localeCompare(b.label));
 
   // matches /{acYear}/{school}
   if (selectedOptions.length < 3) {

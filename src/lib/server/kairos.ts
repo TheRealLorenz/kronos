@@ -66,7 +66,10 @@ async function loadAcademicYears(): Promise<AcademicYear[]> {
   }
 }
 
-async function loadSchoolsAndDegrees(year: string): Promise<string> {
+async function loadSchoolsAndDegrees(
+  platform: App.Platform | undefined,
+  year: string
+): Promise<string> {
   const url = `https://kairos.unifi.it/agendaweb/combo.php?aa=${year}&page=corsi`;
 
   if (dev) {
@@ -75,12 +78,12 @@ async function loadSchoolsAndDegrees(year: string): Promise<string> {
     if (localDevCache.has(url)) {
       const item = localDevCache.get(url)!;
       if (now < item.expiry) {
-        console.log('Cache hit');
+        console.log('[DEV] Cache hit');
         return item.data as string;
       }
     }
 
-    console.log('Cache miss');
+    console.log('[DEV] Cache miss');
     const response = await fetch(url);
     const data = await response.text();
 
@@ -88,11 +91,36 @@ async function loadSchoolsAndDegrees(year: string): Promise<string> {
     return data;
   }
 
-  throw 'Not implemented!';
+  const cache = platform?.caches?.default;
+  const request = new Request(url);
+
+  if (cache) {
+    const cachedResponse = await cache.match(request);
+    if (cachedResponse) {
+      console.log('[PROD] Pulled massive payload from Edge Cache');
+      return await cachedResponse.text();
+    }
+  }
+
+  console.log('[PROD] Fetching massive payload from the Bad API...');
+  const response = await fetch(request);
+
+  if (cache) {
+    const responseToCache = new Response(response.clone().body, {
+      headers: {
+        'Cache-Control': 's-maxage=300',
+        'Content-Type': 'text/plain'
+      }
+    });
+
+    platform.context.waitUntil(cache.put(request, responseToCache));
+  }
+
+  return await response.text();
 }
 
-async function loadSchools(year: string): Promise<School[]> {
-  const rawValue = await loadSchoolsAndDegrees(year);
+async function loadSchools(platform: App.Platform | undefined, year: string): Promise<School[]> {
+  const rawValue = await loadSchoolsAndDegrees(platform, year);
 
   try {
     const lastLine = rawValue.split('\n').at(-3) ?? '';
@@ -106,8 +134,12 @@ async function loadSchools(year: string): Promise<School[]> {
   }
 }
 
-async function loadDegrees(year: string, school: string): Promise<Degree[]> {
-  const rawValue = await loadSchoolsAndDegrees(year);
+async function loadDegrees(
+  platform: App.Platform | undefined,
+  year: string,
+  school: string
+): Promise<Degree[]> {
+  const rawValue = await loadSchoolsAndDegrees(platform, year);
 
   try {
     const firstLine = rawValue.split('\n')[0] ?? '';
