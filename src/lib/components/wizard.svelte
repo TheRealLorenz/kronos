@@ -10,7 +10,7 @@
   type Props = {
     title: string;
     subtitle: string;
-    options: { label: string; value: string }[];
+    options: { label: string; value: string, tags?: string[] }[];
     step: number;
     stepCount: number;
     icon: typeof IconType;

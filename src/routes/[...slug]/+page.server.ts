@@ -71,7 +71,7 @@ export const load: PageServerLoad = async ({ params, url, platform }): Promise<P
   if (selectedOptions.length < 3) {
     return {
       step: 1,
-      options: degrees.map(({ label, valore }) => ({ label, value: valore }))
+      options: degrees.map(({ label, valore, tipo }) => ({ label, value: valore, tags: [tipo] }))
     };
   }
 

@@ -6,7 +6,7 @@
   type Props = {
     title: string;
     subtitle: string;
-    options: { label: string; value: string }[];
+    options: { label: string; value: string; tags?: string[] }[];
     icon: typeof IconType;
     onSelect: (a: string) => void;
   };
@@ -40,14 +40,21 @@
                 }, 200);
               }}
               class={twMerge(
-                "my-2 w-full rounded-xl border border-neutral-300 bg-white p-4 text-left text-sm font-bold transition-all active:scale-[0.98]",
+                "my-2 w-full rounded-xl border border-neutral-300 bg-white p-3 text-left text-sm font-bold transition-all active:scale-[0.98]",
                 $selected === option.value ? 'border-indigo-600 bg-indigo-50/50 shadow-sm text-indigo-500' : ''
               )}
             >
               <div class="flex items-center">
-                <p class="capitalize">
-                  {option.label}
-                </p>
+                <div>
+                  <p class="capitalize text-md">{option.label}</p>
+                  {#if option?.tags?.length}
+                    <div class="mt-2">
+                      {#each option.tags as tag (tag)}
+                        <span class="uppercase text-xs bg-indigo-100 text-indigo-600 py-0.5 px-2 rounded-full">{tag}</span>
+                      {/each}
+                    </div>
+                  {/if}
+                </div>
                 {#if $selected === option.value}
                   <Check class="w-6 h-6 ml-auto text-white bg-indigo-600 rounded-full shrink-0" />
                 {/if}
