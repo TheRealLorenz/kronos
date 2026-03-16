@@ -11,6 +11,10 @@ declare global {
     interface Platform {
       context: ExecutionContext;
       caches: CacheStorage & { default: Cache };
+      env: Env;
+      ctx: ExecutionContext;
+      caches: CacheStorage;
+      cf?: IncomingRequestCfProperties
     }
   }
 }
