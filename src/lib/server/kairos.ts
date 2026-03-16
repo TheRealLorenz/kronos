@@ -47,6 +47,7 @@ export type Cell = {
   orario: string;
   tipo: string;
   data: string;
+  Annullato: string;
 };
 
 async function loadAcademicYears(): Promise<AcademicYear[]> {
@@ -210,13 +211,14 @@ async function loadTimetable(
     const rawObject: Timetable = JSON.parse(await response.text());
     const cells = rawObject.celle
       .filter((x) => x.data === formattedDate)
-      .map(({ titolo_lezione, docente, aula, orario, tipo, data }) => ({
+      .map(({ titolo_lezione, docente, aula, orario, tipo, data, Annullato }) => ({
         titolo_lezione: titolo_lezione.toLowerCase(),
         docente: docente.toLowerCase(),
         aula,
         orario,
         tipo,
-        data
+        data,
+        Annullato
       }))
       .sort((a, b) => a.orario.localeCompare(b.orario));
     return cells;

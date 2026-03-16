@@ -126,15 +126,18 @@
       </div>
     {:else}
       {#each schedule as lesson, index (index)}
+        {@const isCancelled = lesson.Annullato === "1"}
+        {@const bgColor = isCancelled ? 'bg-red-600' : 'bg-indigo-500'}
+        {@const textColor = isCancelled ? 'text-red-600' : 'text-indigo-500'}
         <div class="relative m-4 overflow-hidden rounded-xl bg-white px-4 py-2 shadow-sm">
-          <div class="absolute top-0 bottom-0 left-0 w-1.5 bg-indigo-500"></div>
+          <div class="absolute top-0 bottom-0 left-0 w-1.5 {bgColor}"></div>
           <span
             class="absolute top-2 right-2 rounded-full bg-neutral-100 px-2 py-1 text-xs font-bold text-neutral-600 uppercase"
             >{lesson.tipo}</span
           >
 
-          <p class="text-sm font-bold text-indigo-500">{lesson.orario}</p>
-          <p class="mb-8 font-bold capitalize">{lesson.titolo_lezione}</p>
+          <p class="text-sm font-bold {textColor}">{lesson.orario}</p>
+          <p class="mb-8 font-bold capitalize {isCancelled ? 'line-through italic': ''}">{lesson.titolo_lezione}</p>
           <div class="mb-2 flex items-center gap-1.5">
             <MapPin class="h-4 w-4 text-neutral-400" />
             <span class="text-sm text-neutral-600">{lesson.aula}</span>
