@@ -22,8 +22,8 @@
   const selected = writable<string | undefined>(undefined);
 </script>
 
-<div>
-  <div class="flex min-h-dvh flex-col items-center bg-gray-100 p-4 pt-16">
+<div class="bg-gray-100">
+  <div class="flex min-h-dvh flex-col items-center max-w-180 mx-auto p-4 pt-16">
     <Icon class="mt-4 h-16 w-16 rounded-2xl bg-indigo-100 p-4 text-indigo-600" />
     <h1 class="m-4 text-4xl font-bold">{title}</h1>
     <p class="text-sm text-neutral-500">{subtitle}</p>
